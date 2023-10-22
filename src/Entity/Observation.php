@@ -2,12 +2,22 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ObservationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ObservationRepository::class)]
-#[ApiResource]
+#[
+    ApiResource,
+    ApiFilter(
+        SearchFilter::class,
+        properties: [
+            'species_observe' => SearchFilter::STRATEGY_EXACT
+        ]
+    )
+]
 class Observation
 {
     #[ORM\Id]
@@ -41,6 +51,12 @@ class Observation
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $species_observe = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $species = null;
 
     public function getId(): ?int
     {
@@ -151,6 +167,30 @@ class Observation
     public function setUpdatedAt(\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getSpeciesObserve(): ?string
+    {
+        return $this->species_observe;
+    }
+
+    public function setSpeciesObserve(string $species_observe): static
+    {
+        $this->species_observe = $species_observe;
+
+        return $this;
+    }
+
+    public function getSpecies(): ?string
+    {
+        return $this->species;
+    }
+
+    public function setSpecies(string $species): static
+    {
+        $this->species = $species;
 
         return $this;
     }
