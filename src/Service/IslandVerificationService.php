@@ -23,7 +23,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
         }
 
         try {
-            $url = $this->apiBaseUrl . '/pandore/ilot/IlotDto/';
+            $url = $this->apiBaseUrl . '/pandore/ilot/IlotDto/'. $island .'&_responseMode='.$responseMode;
             $response = $this->httpClient->request('GET', $url);
             if ($response->getStatusCode() === 200) {
                 return $response->toArray();

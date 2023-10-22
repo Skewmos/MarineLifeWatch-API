@@ -6,7 +6,9 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ObservationRepository;
+use App\Validator\IdentificationQualityConstraint;
 use Doctrine\ORM\Mapping as ORM;
+use App\Validator\SpeciesConstraint;
 
 #[ORM\Entity(repositoryClass: ObservationRepository::class)]
 #[
@@ -38,6 +40,7 @@ class Observation
     private ?string $identification_quality = null;
 
     #[ORM\Column(nullable: true)]
+    #[IdentificationQualityConstraint]
     private ?float $individual_size = null;
 
     #[ORM\Column(nullable: true)]
@@ -56,7 +59,11 @@ class Observation
     private ?string $species_observe = null;
 
     #[ORM\Column(length: 255)]
+    #[SpeciesConstraint]
     private ?string $species = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $individuals_estimate = null;
 
     public function getId(): ?int
     {
@@ -191,6 +198,18 @@ class Observation
     public function setSpecies(string $species): static
     {
         $this->species = $species;
+
+        return $this;
+    }
+
+    public function getIndividualsEstimate(): ?int
+    {
+        return $this->individuals_estimate;
+    }
+
+    public function setIndividualsEstimate(?int $individuals_estimate): static
+    {
+        $this->individuals_estimate = $individuals_estimate;
 
         return $this;
     }
