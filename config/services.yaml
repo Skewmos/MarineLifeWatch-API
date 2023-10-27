@@ -30,3 +30,5 @@ services:
             $islandVerificationService: '@App\Service\IslandVerificationService'
         tags:
             - { name: 'doctrine.event_subscriber' }
+    App\Validator\IdentificationQualityValidator:
+        tags: [ 'validator.constraint_validator' ]
