@@ -9,6 +9,8 @@ use App\Repository\ObservationRepository;
 use App\Validator\IdentificationQualityConstraint;
 use Doctrine\ORM\Mapping as ORM;
 use App\Validator\SpeciesConstraint;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: ObservationRepository::class)]
 #[
@@ -37,16 +39,16 @@ class Observation
     private ?\DateTimeImmutable $observation_at = null;
 
     #[ORM\Column(length: 255)]
+    #[IdentificationQualityConstraint]
     private ?string $identification_quality = null;
 
     #[ORM\Column(nullable: true)]
-    #[IdentificationQualityConstraint]
     private ?float $individual_size = null;
 
     #[ORM\Column(nullable: true)]
     private ?float $observed_dive = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?bool $school_of_fish = null;
 
     #[ORM\Column]
@@ -64,6 +66,26 @@ class Observation
 
     #[ORM\Column(nullable: true)]
     private ?int $individuals_estimate = null;
+
+    #[Assert\Callback]
+    public function validate(ExecutionContextInterface $context, $payload): void
+    {
+        if ($this->species === 'fish' && empty($this->school_of_fish)) {
+            $context->buildViolation('The school_of_fish field cannot be empty when species is "fish".')
+                ->atPath('school_of_fish')
+                ->addViolation();
+        }
+        if ($this->school_of_fish === true && empty($this->individuals_estimate)) {
+            $context->buildViolation('The individuals_estimate field cannot be empty when species is "fish".')
+                ->atPath('school_of_fish')
+                ->addViolation();
+        }
+        if ($this->species === 'marine mammal' && empty($this->observed_dive)) {
+            $context->buildViolation('The observed_dive field cannot be empty when species is "marine mammal".')
+                ->atPath('observed_dive')
+                ->addViolation();
+        }
+    }
 
     public function getId(): ?int
     {
